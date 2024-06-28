@@ -3,7 +3,7 @@ name: Create Checklist Issue on Push
 on:
   push:
     branches:
-      - release/*
+      - feature/*
 
 jobs:
   create-issue:
