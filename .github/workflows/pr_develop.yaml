@@ -45,3 +45,37 @@ jobs:
           else
             echo "Todos os arquivos .properties estão preenchidos corretamente."
           fi
+
+  create-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read checklist template
+        id: read-template
+        run: |
+          CHECKLIST=$(cat .github/CHECKLIST-ISSUE.md)
+          echo "::set-output name=checklist::$CHECKLIST"
+
+      - name: Create issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const checklist = process.env.CHECKLIST;
+
+            const issueTitle = `Checklist for PR #${context.payload.pull_request.number}`;
+            const issueBody = checklist;
+
+            const issue = await github.rest.issues.create({
+              owner: owner,
+              repo: repo,
+              title: issueTitle,
+              body: issueBody,
+            });
+
+            core.setOutput("issue_number", issue.data.number);

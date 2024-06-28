@@ -1,5 +1,4 @@
 ## Checklist
-
 - [ ] Meu código segue o estilo de código deste projeto
 - [ ] Minha alteração requer uma alteração na documentação
 - [ ] Atualizei a documentação de acordo.
