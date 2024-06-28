@@ -21,7 +21,7 @@ jobs:
           sudo apt install gh -y
 
       - name: Authenticate GitHub CLI
-        run: echo ${{ secrets.GITHUB_TOKEN}} | gh auth login --with-token
+        run: echo ${{ secrets.GITHUB_ISSUE_TOKEN}} | gh auth login --with-token
 
       - name: Read Checklist Template
         id: read-template
@@ -36,7 +36,7 @@ jobs:
           echo ${{ github.repository}}
           curl -L \
             -X POST \
-            -H "Authorization: Bearer ${{secrets.GITHUB_TOKEN}}" \
+            -H "Authorization: Bearer ${{secrets.ISSUE_TOKEN}}" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{github.repository}}/issues \
