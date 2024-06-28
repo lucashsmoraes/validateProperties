@@ -17,7 +17,7 @@ jobs:
       - name: Read Checklist Template
         id: read-template
         run: |
-          CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md)
+          CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md | jq -sR .)
           echo "CHECKLIST<<EOF" >> $GITHUB_ENV
           echo "$CHECKLIST" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
