@@ -33,6 +33,7 @@ jobs:
 
       - name: Create Issue using REST API
         run: |
+          echo github.repository
           curl -X POST \
             -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
