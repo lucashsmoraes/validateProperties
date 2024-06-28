@@ -37,3 +37,4 @@ jobs:
             core.info(`Issue created: ${issue.data.html_url}`);
         env:
           CHECKLIST: ${{ env.CHECKLIST }}
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
