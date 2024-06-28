@@ -33,6 +33,8 @@ jobs:
 
       - name: Create Issue using REST API
         run: |
+          echo ${{ github.owner}}
+          echo ${{ github.repository}}
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
