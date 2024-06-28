@@ -28,7 +28,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { github } = require('@actions/github');
             const checklist = process.env.CHECKLIST;
 
             const issueTitle = `Checklist for PR Teste`;
