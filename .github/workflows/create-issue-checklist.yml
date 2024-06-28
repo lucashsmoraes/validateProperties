@@ -6,7 +6,6 @@ on:
 
 jobs:
   check-issue:
-    needs: create-issue
     runs-on: ubuntu-latest
 
     steps:
