@@ -18,28 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Read checklist template
-        id: read-template
-        run: |
-          CHECKLIST=$(cat .github/ISSUE-CHECKLIST.md)
-          echo "::set-output name=checklist::$CHECKLIST"
-
-      - name: Create issue
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const checklist = process.env.CHECKLIST;
-
-            const issueTitle = `Checklist for PR Teste`;
-            const issueBody = checklist;
-
-            const issue = await github.rest.issues.create({
-              title: issueTitle,
-              body: issueBody,
-            });
-
-            core.setOutput("issue_number", issue.data.number);
-
       - name: Validate .properties files
         run: |
           # Encontra todos os arquivos .properties dentro da pasta app/java
