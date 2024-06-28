@@ -15,7 +15,7 @@ jobs:
       - name: Read checklist template
         id: read-template
         run: |
-          CHECKLIST=$(cat .github/ISSUE-CHECKLIST)
+          CHECKLIST=$(cat .github/ISSUE_TEMPLATE.md)
           echo "::set-output name=checklist::$CHECKLIST"
 
       - name: Create issue
