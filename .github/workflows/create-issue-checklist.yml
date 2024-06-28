@@ -36,7 +36,7 @@ jobs:
       - name: Create Issue using REST API
         run: |
           echo ${{ github.repository}}
-          echo ${{CHECKLIST}} 
+          echo CHECKLIST
           curl -L \
             -X POST \
             -H "Authorization: Bearer ${{secrets.API_TOKEN}}" \
