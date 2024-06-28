@@ -28,17 +28,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { context, github } = require('@actions/github');
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
             const checklist = process.env.CHECKLIST;
 
             const issueTitle = `Checklist for PR #${context.payload.pull_request.number}`;
             const issueBody = checklist;
 
             const issue = await github.rest.issues.create({
-              owner: owner,
-              repo: repo,
               title: issueTitle,
               body: issueBody,
             });
