@@ -29,7 +29,6 @@ jobs:
         id: read-template
         run: |
           CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md)
-          cat .github/ISSUE_TEMPLATE/checklist.md
           echo "CHECKLIST<<EOF" >> $GITHUB_ENV
           echo "$CHECKLIST" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
