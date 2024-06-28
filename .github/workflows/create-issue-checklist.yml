@@ -3,7 +3,7 @@ name: Create Checklist Issue on Push
 on:
   push:
     branches:
-      - feature/*
+      - release/*
 
 jobs:
   create-issue:
@@ -16,7 +16,9 @@ jobs:
         id: read-template
         run: |
           CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md)
-          echo "::set-output name=checklist::$CHECKLIST"
+          echo "CHECKLIST<<EOF" >> $GITHUB_ENV
+          echo "$CHECKLIST" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Create Issue
         uses: actions/github-script@v6
@@ -25,13 +27,13 @@ jobs:
             const issueTitle = "Code Review Checklist";
             const issueBody = process.env.CHECKLIST;
             const labels = ["checklist"];
-            const { data: issue } = await github.issues.create({
+            const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: issueTitle,
               body: issueBody,
               labels: labels
             });
-            core.info(`Issue created: ${issue.html_url}`);
+            core.info(`Issue created: ${issue.data.html_url}`);
         env:
-          CHECKLIST: ${{ steps.read-template.outputs.checklist }}
+          CHECKLIST: ${{ env.CHECKLIST }}
