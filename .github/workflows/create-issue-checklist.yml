@@ -12,9 +12,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Read Checklist Template
+        id: read-template
+        run: |
+          CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md)
+          echo "::set-output name=checklist::$CHECKLIST"
+
       - name: Create Issue
-        uses: peter-evans/create-issue-from-file@v4
+        uses: actions/github-script@v6
         with:
-          title: "Code Review Checklist"
-          content-filepath: .github/ISSUE_TEMPLATE/checklist.md
-          labels: checklist
+          script: |
+            const issueTitle = "Code Review Checklist";
+            const issueBody = process.env.CHECKLIST;
+            const labels = ["checklist"];
+            const { data: issue } = await github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: issueTitle,
+              body: issueBody,
+              labels: labels
+            });
+            core.info(`Issue created: ${issue.html_url}`);
+        env:
+          CHECKLIST: ${{ steps.read-template.outputs.checklist }}
