@@ -17,7 +17,7 @@ jobs:
       - name: Read Checklist Template
         id: read-template
         run: |
-          CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md | jq -sR .)
+          CHECKLIST=$(jq -Rs . < .github/ISSUE_TEMPLATE/checklist.md)
           echo "CHECKLIST=$CHECKLIST" >> $GITHUB_ENV
 
       - name: Create Issue using REST API
@@ -29,6 +29,6 @@ jobs:
             -H "Accept: application/vnd.github.full+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{github.repository}}/issues \
-            -d '{"title":"Code Review Checklist","body_text": $CHECKLIST,"labels":["question"]}'
+            -d '{"title":"Code Review Checklist","body_text": ${{ env.CHECKLIST }},"labels":["question"]}'
         env:
           CHECKLIST: ${{ env.CHECKLIST }}
