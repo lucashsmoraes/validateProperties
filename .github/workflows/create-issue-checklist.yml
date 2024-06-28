@@ -1,0 +1,65 @@
+name: Create Issue with Checklist
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read checklist template
+        id: read-template
+        run: |
+          CHECKLIST=$(cat .github/template/CHECKLIST-ISSUE.md)
+          echo "::set-output name=checklist::$CHECKLIST"
+
+      - name: Create issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const checklist = process.env.CHECKLIST;
+
+            const issueTitle = `Checklist for PR #${context.payload.pull_request.number}`;
+            const issueBody = checklist;
+
+            const issue = await github.rest.issues.create({
+              owner: owner,
+              repo: repo,
+              title: issueTitle,
+              body: issueBody,
+            });
+
+            core.setOutput("issue_number", issue.data.number);
+
+  check-issue:
+    needs: create-issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check if checklist is completed
+        run: |
+          ISSUE_NUMBER=$(echo "${{ needs.create-issue.outputs.issue_number }}")
+          RESPONSE=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER)
+          CHECKLIST=$(echo $RESPONSE | jq '.body')
+
+          INCOMPLETE_ITEMS=$(echo "$CHECKLIST" | grep -o '\- \[ \]')
+
+          if [ -n "$INCOMPLETE_ITEMS" ]; then
+            echo "Checklist not completed."
+            exit 1
+          else
+            echo "Checklist completed."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
