@@ -23,6 +23,7 @@ jobs:
       - name: Create Issue
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issueTitle = "Code Review Checklist";
             const issueBody = process.env.CHECKLIST;
@@ -37,4 +38,3 @@ jobs:
             core.info(`Issue created: ${issue.data.html_url}`);
         env:
           CHECKLIST: ${{ env.CHECKLIST }}
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
