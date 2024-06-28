@@ -21,13 +21,14 @@ jobs:
       - name: Read checklist template
         id: read-template
         run: |
-          CHECKLIST=$(cat .github/CHECKLIST-ISSUE.md)
+          CHECKLIST=$(cat .github/ISSUE-CHECKLIST.md)
           echo "::set-output name=checklist::$CHECKLIST"
 
       - name: Create issue
         uses: actions/github-script@v6
         with:
           script: |
+            const { github } = require('@actions/github');
             const checklist = process.env.CHECKLIST;
 
             const issueTitle = `Checklist for PR Teste`;
