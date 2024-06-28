@@ -29,6 +29,7 @@ jobs:
         id: read-template
         run: |
           CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md)
+          echo CHECKLIST
           echo "CHECKLIST<<EOF" >> $GITHUB_ENV
           echo "$CHECKLIST" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -36,7 +37,6 @@ jobs:
       - name: Create Issue using REST API
         run: |
           echo ${{ github.repository}}
-          echo CHECKLIST
           curl -L \
             -X POST \
             -H "Authorization: Bearer ${{secrets.API_TOKEN}}" \
