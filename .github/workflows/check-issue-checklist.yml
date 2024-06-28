@@ -20,7 +20,7 @@ jobs:
             const { data: issues } = await github.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: 'checklist',
+              labels: 'question',
               state: 'open'
             });
             if (issues.length === 0) {
