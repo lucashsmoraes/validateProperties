@@ -17,7 +17,7 @@ jobs:
       - name: Read Checklist Template
         id: read-template
         run: |
-          CHECKLIST=$(cat .github/ISSUE_TEMPLATE/checklist.md)
+          CHECKLIST=$(.github/ISSUE_TEMPLATE/checklist.md)
           echo "CHECKLIST<<EOF" >> $GITHUB_ENV
           echo "$CHECKLIST" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -32,4 +32,4 @@ jobs:
             -H "Accept: application/vnd.github.text+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{github.repository}}/issues \
-            -d '{"title":"Code Review Checklist","body":"'$CHECKLIST'","labels":["question"]}'
+            -d '{"title":"Code Review Checklist","body": $CHECKLIST,"labels":["question"]}'
