@@ -21,7 +21,7 @@ jobs:
       - name: Validate .properties files
         run: |
           # Encontra todos os arquivos .properties dentro da pasta app/java
-          properties_files=$(find src/main/java/ -type f -name "*.properties")
+          properties_files=$(find src/main/resource/ -type f -name "*.properties")
           errors=0
 
           for file in $properties_files; do
