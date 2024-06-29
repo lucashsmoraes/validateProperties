@@ -18,7 +18,7 @@ jobs:
       - name: Get Checklist Issue
         id: get-issue
         run: |
-          ISSUES=$(gh issue list --label "checklist" --state open --json number)
+          ISSUES=$(gh issue list --label "question" --state open --json number)
           echo "ISSUES=$ISSUES" >> $GITHUB_ENV
           ISSUE_NUMBER=$(echo "$ISSUES" | jq -r '.[0].number')
           echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
