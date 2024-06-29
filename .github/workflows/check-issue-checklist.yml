@@ -3,57 +3,48 @@ name: Check Checklist Issue on PR
 on:
   pull_request:
     branches:
-      - develop
+      - main
 
 jobs:
   check-issue:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Authenticate GitHub CLI
+        run: echo ${{ secrets.API_TOKEN }} | gh auth login --with-token
 
-      - name: Find related issue
-        id: find-issue
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { data: issues } = await github.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: 'question',
-              state: 'open'
-            });
-            if (issues.length === 0) {
-              core.setFailed('No open checklist issue found.');
-            } else {
-              core.setOutput('issue_number', issues[0].number);
-            }
-
-      - name: Check if issue is complete
-        if: success()
+      - name: Check if Checklist Issue is Completed
         id: check-issue
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const issue_number = core.getInput('issue_number');
-            const { data: issue } = await github.issues.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue_number
-            });
-            const checklistComplete = issue.body.split('\n').every(line => !line.startsWith('- [ ]'));
-            if (!checklistComplete) {
-              core.setFailed('Checklist issue is not fully completed.');
+        run: |
+          ISSUES=$(gh issue list --label "checklist" --state open --json title,body)
+          echo "ISSUES=$ISSUES" >> $GITHUB_ENV
+          CHECKLIST_COMPLETED=true
+          for row in $(echo "${ISSUES}" | jq -r '.[] | @base64'); do
+            _jq() {
+             echo ${row} | base64 --decode | jq -r ${1}
             }
+            TITLE=$(_jq '.title')
+            BODY=$(_jq '.body')
+            if [[ "$TITLE" == "Code Review Checklist" ]]; then
+              CHECKLIST_COMPLETED=false
+              for ITEM in $(echo "$BODY" | grep -o '\[ \]'); do
+                if [[ "$ITEM" == "[ ]" ]]; then
+                  CHECKLIST_COMPLETED=false
+                  break
+                fi
+              done
+              if $CHECKLIST_COMPLETED; then
+                break
+              fi
+            fi
+          done
 
-      - name: Approve PR if checklist is complete
-        if: success()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              event: 'APPROVE'
-            });
+          echo "CHECKLIST_COMPLETED=$CHECKLIST_COMPLETED" >> $GITHUB_ENV
+
+      - name: Fail if Checklist is not Completed
+        run: |
+          if [ "$CHECKLIST_COMPLETED" = "false" ]; then
+            echo "Checklist is not completed. Please complete the checklist before merging."
+            exit 1
+          else
+            echo "Checklist is completed."
+          fi
