@@ -1,0 +1,49 @@
+---
+name: "Pull Request to develop"
+
+"on":
+  push:
+    branches:
+      - feature/*
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-properties:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Validate .properties files
+        run: |
+          # Encontra todos os arquivos .properties dentro da pasta app/java
+          properties_files=$(find src/main/resources/ -type f -name "*.properties")
+          errors=0
+
+          for file in $properties_files; do
+            while IFS= read -r line; do
+              # Ignora linhas que começam com # (comentários)
+              if [[ $line == \#* ]]; then
+                continue
+              fi
+
+              # Verifica se a linha contém '=' e se o valor após '=' está vazio
+              if [[ $line == *= && ${line#*=} == "" ]]; then
+                echo "Arquivo: $file - Variável não preenchida: ${line%=*}"
+                errors=$((errors+1))
+              fi
+            done < "$file"
+          done
+
+          if [ $errors -gt 0 ]; then
+            echo "Falha na validação das variáveis nos arquivos .properties."
+            exit 1
+          else
+            echo "Todos os arquivos .properties estão preenchidos corretamente."
+          fi
+
+
