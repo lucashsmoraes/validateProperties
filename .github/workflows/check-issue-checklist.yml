@@ -3,7 +3,7 @@ name: Check Checklist Issue on PR
 on:
   pull_request:
     branches:
-      - main
+      - develop
 
 jobs:
   check-issue:
