@@ -15,7 +15,7 @@ jobs:
       - name: Check if Checklist Issue is Completed
         id: check-issue
         run: |
-          ISSUES=$(gh issue list --label "checklist" --state open --json title,body)
+          ISSUES=$(gh issue list --label "question" --state open --json title,body)
           echo "ISSUES=$ISSUES" >> $GITHUB_ENV
           CHECKLIST_COMPLETED=true
           for row in $(echo "${ISSUES}" | jq -r '.[] | @base64'); do
